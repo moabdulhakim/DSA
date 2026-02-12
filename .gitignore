@@ -1,5 +1,5 @@
 # ---- General build outputs ----
-#cmake-build-*/
+cmake-build-*/
 build/
 out/
 dist/
@@ -16,7 +16,7 @@ dist/
 *.idb
 
 # ---- JetBrains CLion ----
-#.idea/
+.idea/
 *.iml
 
 # ---- Visual Studio ----
