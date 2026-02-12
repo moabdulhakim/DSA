@@ -1,8 +1,0 @@
-# ninja log v6
-8	1269	7625781220986251	CMakeFiles/Data_Structures.dir/main.cpp.obj	977369dd0c093f31
-1270	1527	7625781233605307	Data_Structures.exe	b5bb4f98ae813a66
-51	1727	7621047429218756	CMakeFiles/Data_Structures.dir/headers/Stack.cpp.obj	35e7443d255d9a2f
-41	1453	7619228776534842	CMakeFiles/Data_Structures.dir/headers/Array.cpp.obj	3829d3c96aa4a786
-33	123	7620928632712680	CMakeFiles/Data_Structures.dir/headers/Node.cpp.obj	922e5f87d142ef2a
-28	869	7620930875776196	CMakeFiles/Data_Structures.dir/headers/Linkedlist.cpp.obj	8617f24f3c9c2af4
-80	1228	7625235688734495	CMakeFiles/Data_Structures.dir/headers/Queue.cpp.obj	d1e17d6bffd18fef
