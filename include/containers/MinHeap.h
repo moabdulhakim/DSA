@@ -1,64 +1,58 @@
-#include "./Array.h"
+#include "./Vector.h"
 
 template<typename T>
-class MinHeap: public Array<T> {
-	using Array<T>::data;
-	using Array<T>::capacity;
-
-	using Array<T>::expand;
+class MinHeap{
+	Vector<T> arr;
 
 	void getLessThanImplicit(T value, int topPos, MinHeap& result) {
-		if (data[topPos] >= value) {
+		if (arr[topPos] >= value) {
 			return;
 		}
 
-		result.push(data[topPos]);
+		result.push(arr[topPos]);
 
-		int firstChildPos = getFirstChildPos(topPos);
-		int secondChildPos = getSecondChildPos(topPos);
+		const int firstChildPos = this->getFirstChildPos(topPos);
+		const int secondChildPos = this->getSecondChildPos(topPos);
 
 		if (firstChildPos != -1) getLessThanImplicit(value, firstChildPos, result);
 		if (secondChildPos != -1) getLessThanImplicit(value, secondChildPos, result);
 	}
 
 public:
-	using Array<T>::size;
-
-	MinHeap(int s = 0) : Array<T>(s) {}
-	MinHeap(int s, T val) : Array<T>(s, val) {}
-	MinHeap(T* arrPtr, int s) 
-		: Array<T>(arrPtr, s)
-	
+	explicit MinHeap(int s = 0) : arr(s) {}
+	MinHeap(int s, T val) : arr(s, val) {}
+	MinHeap(T* arrPtr, int s)
+		: arr(arrPtr, s)
 	{
-		heapify();
+		this->heapify();
 	}
-	MinHeap(initializer_list<T> list) 
-		: Array<T>(list) // O(n)
+	MinHeap(std::initializer_list<T> list)
+		: arr(list) // O(n)
 	{
-		heapify(); // O(n) not O( nlog(n) )
+		this->heapify(); // O(n) not O( nlog(n) )
 	}
 
-	static int getParentPos(int childPos) {
+	static int getParentPos(const int childPos) {
 		return (childPos - 1) / 2;
 	}
 
-	int getFirstChildPos(int parentPos) {
+	int getFirstChildPos(const int parentPos) const {
 		int pos = 2 * parentPos + 1;
-		if (pos >= size) pos = -1;
+		if (pos >= arr.getSize()) pos = -1;
 		return pos;
 	}
-	int getSecondChildPos(int parentPos) {
+	int getSecondChildPos(const int parentPos) const {
 		int pos = 2 * parentPos + 2;
-		if (pos >= size) pos = -1;
+		if (pos >= arr.getSize()) pos = -1;
 		return pos;
 	}
 
 	void heapify_up(int childPos) {
 		int parentPos = getParentPos(childPos);
 
-		if (childPos == 0 || data[parentPos] <= data[childPos]) return;
+		if (childPos == 0 || arr[parentPos] <= arr[childPos]) return;
 
-		swap(data[parentPos], data[childPos]);
+		std::swap(arr[parentPos], arr[childPos]);
 		heapify_up(parentPos);
 	}
 
@@ -67,51 +61,50 @@ public:
 		int secondChildPos = getSecondChildPos(parentPos);
 
 		if (childPos == -1) return; // no children
-		if (secondChildPos != -1 && data[secondChildPos] < data[childPos]) {
+		if (secondChildPos != -1 && arr[secondChildPos] < arr[childPos]) {
 			childPos = secondChildPos;
 		}
 
-		if (data[parentPos] > data[childPos]) {
-			swap(data[parentPos], data[childPos]);
+		if (arr[parentPos] > arr[childPos]) {
+			std::swap(arr[parentPos], arr[childPos]);
 			heapify_down(childPos);
 		}
 	}
 
 	void heapify() {
-		for (int i = size / 2 - 1; i >= 0; i--) {
+		for (int i = arr.getSize() / 2 - 1; i >= 0; --i) {
 			heapify_down(i);
 		}
 	}
 
 	void push(T value) {
-		if (size >= capacity) expand();
-		data[size++] = value;
-		heapify_up(size - 1);
+		arr.push_back(value);
+		heapify_up(arr.getSize() - 1);
 	}
 
 	void pop() {
 		if(isEmpty()) {
-			throw exception("heap is empty");
+			throw std::runtime_error("heap is empty");
 		}
 
-		data[0] = data[--size];
+		arr[0] = arr[--arr.getSize()];
 		heapify_down(0);
 	}
 
-	bool isEmpty() {
-		return size == 0;
+	bool isEmpty() const {
+		return arr.getSize() == 0;
 	}
 
-	int top() {
+	T top() const {
 		if (isEmpty()) {
-			throw exception("heap is empty");
+			throw std::runtime_error("heap is empty");
 		}
 
-		return data[0];
+		return arr[0];
 	}
 
 	MinHeap getLessThan(T value) {
-		MinHeap<int> result;
+		MinHeap<T> result;
 
 		getLessThanImplicit(value, 0, result);
 
@@ -119,7 +112,7 @@ public:
 	}
 
 	template<typename T2>
-	static bool isHeapArray(T2* arrPtr, int n) {
+	static bool isHeapArray(T2* arrPtr, const int n) {
 		for (int i = n-1; i > 0; i--) {
 			if (arrPtr[i] < arrPtr[MinHeap<T2>::getParentPos(i)]) return false;
 		}
@@ -139,20 +132,21 @@ public:
 		}
 	}
 
+	/*
 	void heapSortInPlace(T* arrPtr, int n) {		
 		if (n <= 1) return;
 
-		T* oldData = data;
-		int oldSize = size;
+		T* oldData = arr.data;
+		int oldSize = arr.size;
 
-		data = arrPtr;
-		size = n;
+		arr.data = arrPtr;
+		arr.size = n;
 
 		heapify();
 
 		for (int i = 0; i < n; i++) {
 			swap(arrPtr[0], arrPtr[n - 1 - i]);
-			size--;
+			--arr.size;
 			heapify_down(0);
 		}
 
@@ -160,7 +154,8 @@ public:
 			swap(arrPtr[i], arrPtr[n - 1 - i]);
 		}
 
-		data = oldData;
+		arr.data = oldData;
 		size = oldSize;
 	}
+	*/
 };
